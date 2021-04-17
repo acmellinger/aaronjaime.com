@@ -1,4 +1,4 @@
-import { Linkedin, Github } from "@styled-icons/fa-brands";
+import { Linkedin } from "@styled-icons/fa-brands";
 import { Envelope } from "@styled-icons/fa-solid";
 import Email from "./Email";
 import styled, { css } from "styled-components";
@@ -32,10 +32,6 @@ const StyledLinkedIn = styled(Linkedin)`
 `;
 
 const StyledEnvelope = styled(Envelope)`
-  ${baseIconStyle}
-`;
-
-const StyledGithub = styled(Github)`
   ${baseIconStyle}
 `;
 
@@ -86,15 +82,6 @@ const Links = ({ email, error, recaptchaRef }: LinksProps) => {
           href={process.env.REACT_APP_LINKEDIN}
         >
           <StyledLinkedIn />
-        </a>
-        <a
-          title="My Github"
-          aria-label="My Github"
-          target="_blank"
-          rel="noopener noreferrer"
-          href={process.env.REACT_APP_GITHUB}
-        >
-          <StyledGithub />
         </a>
       </IconDiv>
       <Email email={email} error={error} />
