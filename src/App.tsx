@@ -1,14 +1,15 @@
 import Particles from "react-tsparticles";
 import "./App.css";
 import particlesOptions from "./particles.json";
-import { ISourceOptions } from "tsparticles";
+import { loadFull } from "tsparticles";
+import type { Container, Engine, ISourceOptions } from "tsparticles-engine";
 import Info from "./components/Info";
 import Links from "./components/Links";
 import styled from "styled-components";
 import ReCAPTCHA from "react-google-recaptcha";
 import emailHider from "./api/emailHider";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 const Content = styled.div`
   font-family: "Montserrat", sans-serif;
@@ -29,6 +30,22 @@ const Content = styled.div`
 `;
 
 function App() {
+  const particlesInit = useCallback(async (engine: Engine) => {
+    console.log(engine);
+
+    // you can initialize the tsParticles instance (engine) here, adding custom shapes or presets
+    // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
+    // starting from v2 you can add only the features you need reducing the bundle size
+    await loadFull(engine);
+  }, []);
+
+  const particlesLoaded = useCallback(
+    async (container: Container | undefined) => {
+      await console.log(container);
+    },
+    []
+  );
+
   const [email, setEmail] = useState<string | undefined>(undefined);
   const [error, setError] = useState<Boolean>(false);
 
@@ -53,7 +70,12 @@ function App() {
 
   return (
     <>
-      <Particles options={particlesOptions as ISourceOptions} />
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        loaded={particlesLoaded}
+        options={particlesOptions as ISourceOptions}
+      />
       <Content>
         <Info />
         <Links email={email} error={error} recaptchaRef={recaptchaRef} />
