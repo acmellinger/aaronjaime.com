@@ -1,27 +1,48 @@
 name: "Deployment"
 # the event that will trigger the action
-on: push
+on:
+  push:
+    branches: ["main"]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 # what the action will do
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     # the operating system it will run on
     runs-on: ubuntu-latest
     # the list of steps that the action will go through
     steps:
-      - name: "Checkout"
+      - name: Checkout
         uses: actions/checkout@v3
-      - name: Use Node.js
+      - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: 18
           cache: "yarn"
-      - name: "Install Dependencies"
-        run: yarn
-      - name: "Github Pages Deployment"
-        run: |
-          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          yarn deploy -u "github-actions-bot <support+actions@github.com>"
-        if: ${{ github.ref == 'refs/heads/main' }} # only deploy main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload dist repository
+          path: "./dist"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

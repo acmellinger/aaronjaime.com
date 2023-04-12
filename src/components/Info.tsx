@@ -27,8 +27,8 @@ const InfoDiv = styled.div``;
 const Info = () => {
   return (
     <InfoDiv>
-      <Name>{process.env.REACT_APP_NAME}</Name>
-      <Title>{process.env.REACT_APP_TITLE}</Title>
+      <Name>{import.meta.env.VITE_NAME}</Name>
+      <Title>{import.meta.env.VITE_TITLE}</Title>
     </InfoDiv>
   );
 };
