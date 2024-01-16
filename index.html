@@ -2,17 +2,114 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="icon" href="media/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="media/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="media/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="media/favicon-16x16.png"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="/manifest.json" />
+    <title>Aaron Mellinger</title>
 
-    <title>Jaime Mellinger</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+      function onEmailClick() {
+        grecaptcha.execute();
+      }
+      async function onRecaptcha(token) {
+        var response = await fetch(
+          "https://email-hider-xhbobd465a-uc.a.run.app",
+          {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({
+              token: token,
+              site: "aaronjaime",
+            }),
+          }
+        );
+        var mydiv = document.getElementById("email");
+        if (response.status == 200) {
+          var newElement = document.createElement("a");
+          const rjson = await response.json();
+          const email = rjson["email"];
+          newElement.setAttribute(
+            "href",
+            "mailto:" + email + "?subject=Website Contact"
+          );
+          newElement.setAttribute("class", "emailtext");
+          newElement.innerText = email;
+          mydiv.appendChild(newElement);
+        } else {
+          var newElement = document.createElement("p");
+          newElement.setAttribute("class", "errortext");
+          newElement.innerText = "CAPTCHA Failed";
+          console.log(mydiv);
+          mydiv.appendChild(newElement);
+        }
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="tsparticles"></div>
+    <div class="content">
+      <div class="info">
+        <h1>Jaime Mellinger</h1>
+        <h2>Commercial Insurance Leader</h2>
+      </div>
+      <div class="links">
+        <button title="My Email" aria-label="My Email" onclick="onEmailClick()">
+          <i class="fa fa-envelope icon"></i>
+        </button>
+        <a
+          title="My Linkedin"
+          aria-label="My LinkedIn"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.linkedin.com/in/jaimemellinger/"
+          ><i class="fab fa-linkedin icon"></i
+        ></a>
+      </div>
+      <div id="email" class="email">&nbsp;</div>
+    </div>
+    <div
+      class="g-recaptcha"
+      data-sitekey="6LdHGn0lAAAAAOA5qv1V6-bR3TttJIRNZUk1PFcx"
+      data-callback="onRecaptcha"
+      data-size="invisible"
+    ></div>
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js/v84a3a4012de94ce1a686ba8c167c359c1696973893317"
+      integrity="sha512-euoFGowhlaLqXsPWQ48qSkBSCFs3DPRyiwVu3FjR96cMPx+Fr+gpWRhIafcHwqwCqWS42RZhIudOvEI+Ckf6MA=="
+      data-cf-beacon='{"rayId":"8462287ec9fc6ba1","r":1,"version":"2023.10.0","token":"f4d854f9fdaf46c0b1c56ecb73423c9e"}'
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/js/all.min.js"
+      integrity="sha256-uNYoXefWRqv+PsIF/OflNmwtKM4lStn9yrz2gVl6ymo="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/tsparticles@2.9.3/tsparticles.bundle.min.js"
+      integrity="sha512-4zLdYOE9r8x0esJk0GyNtEZy/N/CIeEF/vW90cg31PdMIpIEMV5qwnV7Jd4isRfBD1ivzpcV7dDELN+A/j6MiA=="
+      crossorigin="anonymous"
+    ></script>
+    <script type="text/javascript" src="js/particles.js"></script>
   </body>
 </html>
