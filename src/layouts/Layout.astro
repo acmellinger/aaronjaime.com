@@ -1,0 +1,61 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+
+import "@fortawesome/fontawesome-svg-core/styles.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+<script>
+  // import the required functions and icons
+  import { library, config, dom } from "@fortawesome/fontawesome-svg-core";
+  import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+  import { faLinkedin } from "@fortawesome/free-brands-svg-icons";
+
+  // since we want astro to handle the css we should disable automatic css injection on the client
+  // this is similar to other ssr frameworks like next.js or nuxt
+  config.autoAddCss = false;
+
+  // create a subset of icons that you are going to use so
+  // astro is able to tree shake and optimize the javascript bundle for best performance
+  library.add(faEnvelope, faLinkedin);
+
+  // replace the unprocessed icons with the svg and watch for additional icons
+  dom.watch();
+</script>
+<script is:inline src="https://www.google.com/recaptcha/api.js" async defer
+></script>
+<style is:global>
+  :root {
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #fefcf7;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+  }
+</style>

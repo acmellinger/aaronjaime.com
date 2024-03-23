@@ -1,0 +1,39 @@
+---
+interface Props {
+  name: string;
+  heading: string;
+}
+
+const { name, heading } = Astro.props;
+---
+
+<div class="info">
+  <h1>{name}</h1>
+  <h2>{heading}</h2>
+</div>
+<style>
+  h1 {
+    font-size: 50px;
+    display: block;
+    line-height: 1;
+    color: #141437;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 20px;
+    display: block;
+    line-height: 1;
+    color: #141437;
+    margin-top: 10px;
+  }
+  @media only screen and (min-width: 768px) {
+    h1 {
+      margin-top: 0;
+      font-size: 76px;
+    }
+    h2 {
+      font-size: 34px;
+    }
+  }
+</style>
