@@ -1,0 +1,146 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Info from "../components/Info.astro";
+import Links from "../components/Links.astro";
+import Particles from "astro-particles";
+import type { ISourceOptions } from "tsparticles-engine";
+
+const options: ISourceOptions = {
+  background: {
+    color: {
+      value: "#fefcf7",
+    },
+  },
+  fpsLimit: 60,
+  interactivity: {
+    detectsOn: "window",
+    events: {
+      onClick: {
+        enable: false,
+        mode: "push",
+      },
+      onHover: {
+        enable: true,
+        mode: "repulse",
+      },
+      resize: true,
+    },
+    modes: {
+      bubble: {
+        distance: 400,
+        duration: 2,
+        opacity: 0.8,
+        size: 40,
+      },
+      push: {
+        quantity: 4,
+      },
+      repulse: {
+        distance: 100,
+        duration: 0.4,
+      },
+    },
+  },
+  particles: {
+    color: {
+      value: "#141437",
+    },
+    links: {
+      color: "#141437",
+      distance: 150,
+      enable: false,
+      opacity: 0.5,
+      width: 1,
+    },
+    collisions: {
+      enable: false,
+    },
+    move: {
+      direction: "none",
+      enable: true,
+      outMode: "out",
+      random: true,
+      speed: 0.5,
+      straight: false,
+    },
+    number: {
+      density: {
+        enable: true,
+        value_area: 500,
+      },
+      value: 100,
+    },
+    opacity: {
+      value: 1,
+      random: true,
+    },
+    shape: {
+      type: "circle",
+    },
+    size: {
+      random: true,
+      value: 3,
+    },
+  },
+  detectRetina: true,
+};
+---
+
+<Layout title={import.meta.env.NAME}>
+  <main>
+    <Info name={import.meta.env.NAME} heading={import.meta.env.HEADING} />
+    <Links
+      linkedin={import.meta.env.LINKEDIN}
+      github={import.meta.env.GITHUB}
+      url={import.meta.env.URL}
+      mysite={import.meta.env.MYSITE}
+    />
+    <div
+      class="g-recaptcha"
+      data-sitekey={import.meta.env.SITEKEY}
+      data-callback="onRecaptcha"
+      data-size="invisible"
+    >
+    </div>
+  </main>
+
+  <Particles id="tsparticles" options={options} init="particlesInit" />
+</Layout>
+<script>
+  import { type Container, type Engine, tsParticles } from "tsparticles-engine";
+  import { loadFull } from "tsparticles";
+
+  // the function name is the parameter passed to the init attribute
+  // required
+  // add the function to window is mandatory, it will be searched there
+  (window as any).particlesInit = async function (engine: Engine) {
+    await loadFull(engine);
+  };
+
+  // the function name is the parameter passed to the loaded attribute
+  // optional
+  // add the function to window is mandatory, it will be searched there
+  (window as any).particlesLoaded = function (container: Container) {
+    console.log("particlesLoaded callback");
+  };
+</script>
+<style>
+  main {
+    font-family: "Montserrat", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #141437;
+    z-index: 1;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: 0 auto;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
+</style>

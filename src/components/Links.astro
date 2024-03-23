@@ -1,0 +1,131 @@
+---
+interface Props {
+  linkedin: string;
+  github: string;
+  url: string;
+  mysite: string;
+}
+
+const { linkedin, github, url, mysite } = Astro.props;
+---
+
+<div class="links">
+  <button title="My Email" aria-label="My Email" id="emailBtn">
+    <i class="fas fa-envelope icon"></i>
+  </button>
+  <a
+    title="My Linkedin"
+    aria-label="My LinkedIn"
+    target="_blank"
+    rel="noopener noreferrer"
+    href={linkedin}><i class="fab fa-linkedin icon"></i></a
+  >
+</div>
+<div id="email" class="email">
+  &nbsp;
+  <a id="emailtext" class="emailtext"></a>
+  <p id="errortext" class="errortext">&nbsp;</p>
+</div>
+
+<script is:inline define:vars={{ url, mysite }}>
+  window.onRecaptcha = async function onRecaptcha(token) {
+    console.log(url);
+    var response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        token: token,
+        site: mysite,
+      }),
+    });
+    if (response.status == 200) {
+      var anchorElement = document.getElementById("emailtext");
+      const rjson = await response.json();
+      const email = rjson["email"];
+      anchorElement.setAttribute(
+        "href",
+        "mailto:" + email + "?subject=Website Contact"
+      );
+      anchorElement.innerText = email;
+    } else {
+      var paraElement = document.getElementById("errortext");
+      paraElement.innerText = "CAPTCHA Failed";
+    }
+  };
+</script>
+<script>
+  function onEmailClick() {
+    grecaptcha.execute();
+  }
+  const button = document.getElementById("emailBtn");
+
+  button!.addEventListener("click", onEmailClick);
+</script>
+<style>
+  button {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    padding: 0px;
+    text-align: center;
+  }
+
+  .icon {
+    text-align: center;
+    color: #141437;
+    width: 20px !important;
+    height: 20px;
+    /* font-size: 20px; */
+    padding: 10px;
+    margin: 5px;
+    transition: all 0.5s;
+  }
+
+  .icon:hover {
+    opacity: 0.5;
+  }
+
+  .icon:active {
+    opacity: 0.5;
+  }
+
+  .links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .emailtext {
+    text-decoration: underline;
+    margin: 0;
+    color: #141437;
+  }
+
+  .emailerror {
+    display: inline;
+    margin: 0;
+    color: #141437;
+  }
+
+  .wait-for-icons {
+    display: none;
+  }
+
+  .fontawesome-i2svg-active .wait-for-icons {
+    display: initial;
+  }
+  @media only screen and (min-width: 768px) {
+    .icon {
+      width: 30px !important;
+      height: 30px;
+      font-size: 70px;
+      line-height: 30px;
+    }
+  }
+</style>
