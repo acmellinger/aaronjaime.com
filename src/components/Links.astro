@@ -46,7 +46,7 @@ const { linkedin, github, url, mysite } = Astro.props;
       const email = rjson["email"];
       anchorElement.setAttribute(
         "href",
-        "mailto:" + email + "?subject=Website Contact"
+        "mailto:" + email + "?subject=Website Contact",
       );
       anchorElement.innerText = email;
     } else {
