@@ -1,5 +1,4 @@
 {
-  "name": "",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -10,15 +9,19 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "0.9.3",
-    "@fontsource/montserrat": "^5.0.20",
-    "@fortawesome/fontawesome-svg-core": "^6.6.0",
-    "@fortawesome/free-brands-svg-icons": "^6.6.0",
-    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@astrojs/check": "0.9.4",
+    "@fontsource/montserrat": "^5.2.8",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/slim": "^3.9.1",
     "@types/grecaptcha": "^3.0.9",
-    "astro": "5.14.3",
-    "astro-particles": "^2.10.0",
-    "tsparticles": "<3",
-    "typescript": "^5.6.2"
+    "astro": "5.14.4",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "prettier-plugin-astro": "0.14.1"
   }
 }
