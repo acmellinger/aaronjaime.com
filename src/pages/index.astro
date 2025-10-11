@@ -2,13 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 import Info from "../components/Info.astro";
 import Links from "../components/Links.astro";
-import Particles from "../components/Particles";
+import Particles from "../components/Particles.astro";
 ---
 
 <Layout title={import.meta.env.NAME}>
   <!-- Particle background rendered in the browser -->
-  <Particles client:load />
-
+  <Particles />
   <!-- Main content -->
   <main>
     <Info name={import.meta.env.NAME} heading={import.meta.env.HEADING} />
@@ -27,7 +26,6 @@ import Particles from "../components/Particles";
     </div>
   </main>
 </Layout>
-
 <style>
   main {
     font-family: "Montserrat", sans-serif;
