@@ -1,26 +1,29 @@
 ---
+import { Icon } from "astro-icon/components";
 interface Props {
   linkedin: string;
   github: string;
   url: string;
   mysite: string;
 }
-
 const { linkedin, github, url, mysite } = Astro.props;
 ---
 
 <div class="links">
   <button title="My Email" aria-label="My Email" id="emailBtn">
-    <i class="fas fa-envelope icon"></i>
+    <Icon name="mdi:email" class="icon" />
   </button>
   <a
     title="My Linkedin"
     aria-label="My LinkedIn"
     target="_blank"
     rel="noopener noreferrer"
-    href={linkedin}><i class="fab fa-linkedin icon"></i></a
+    href={linkedin}
   >
+    <Icon name="mdi:linkedin" class="icon" />
+  </a>
 </div>
+
 <div id="email" class="email">
   &nbsp;
   <a id="emailtext" class="emailtext"></a>
@@ -55,14 +58,15 @@ const { linkedin, github, url, mysite } = Astro.props;
     }
   };
 </script>
+
 <script>
   function onEmailClick() {
     grecaptcha.execute();
   }
   const button = document.getElementById("emailBtn");
-
   button!.addEventListener("click", onEmailClick);
 </script>
+
 <style>
   button {
     background-color: Transparent;
@@ -71,27 +75,11 @@ const { linkedin, github, url, mysite } = Astro.props;
     cursor: pointer;
     overflow: hidden;
     outline: none;
-    padding: 0px;
+    padding: 0;
     text-align: center;
-  }
-
-  .icon {
-    text-align: center;
-    color: #141437;
-    width: 20px !important;
-    height: 20px;
-    /* font-size: 20px; */
-    padding: 10px;
-    margin: 5px;
-    transition: all 0.5s;
-  }
-
-  .icon:hover {
-    opacity: 0.5;
-  }
-
-  .icon:active {
-    opacity: 0.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .links {
@@ -99,6 +87,32 @@ const { linkedin, github, url, mysite } = Astro.props;
     justify-content: center;
     align-items: center;
     text-align: center;
+    gap: 0;
+  }
+
+  .links > * {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.icon) {
+    display: block;
+    text-align: center;
+    color: #141437;
+    width: 30px;
+    height: 30px;
+    padding: 10px;
+    margin: 5px;
+    transition: all 0.5s;
+  }
+
+  :global(.icon:hover) {
+    opacity: 0.5;
+  }
+
+  :global(.icon:active) {
+    opacity: 0.5;
   }
 
   .emailtext {
@@ -113,19 +127,10 @@ const { linkedin, github, url, mysite } = Astro.props;
     color: #141437;
   }
 
-  .wait-for-icons {
-    display: none;
-  }
-
-  .fontawesome-i2svg-active .wait-for-icons {
-    display: initial;
-  }
   @media only screen and (min-width: 768px) {
-    .icon {
-      width: 30px !important;
-      height: 30px;
-      font-size: 70px;
-      line-height: 30px;
+    :global(.icon) {
+      width: 40px;
+      height: 40px;
     }
   }
 </style>
