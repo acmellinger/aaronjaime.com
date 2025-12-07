@@ -6,6 +6,7 @@ interface Props {
   url: string;
   mysite: string;
 }
+
 const { linkedin, github, url, mysite } = Astro.props;
 ---
 
@@ -24,47 +25,63 @@ const { linkedin, github, url, mysite } = Astro.props;
   </a>
 </div>
 
-<div id="email" class="email">
-  &nbsp;
+<div id="email-container" class="email-container">
   <a id="emailtext" class="emailtext"></a>
-  <p id="errortext" class="errortext">&nbsp;</p>
+  <span id="statustext" class="statustext"></span>
 </div>
 
 <script is:inline define:vars={{ url, mysite }}>
-  window.onRecaptcha = async function onRecaptcha(token) {
-    console.log(url);
-    var response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        token: token,
-        site: mysite,
-      }),
-    });
-    if (response.status == 200) {
-      var anchorElement = document.getElementById("emailtext");
-      const rjson = await response.json();
-      const email = rjson["email"];
-      anchorElement.setAttribute(
-        "href",
-        "mailto:" + email + "?subject=Website Contact",
-      );
-      anchorElement.innerText = email;
-    } else {
-      var paraElement = document.getElementById("errortext");
-      paraElement.innerText = "CAPTCHA Failed";
+  window.onTurnstileSuccess = async function (token) {
+    try {
+      var response = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ Token: token, Site: mysite }),
+      });
+
+      if (response.status === 200) {
+        const rjson = await response.json();
+        const email = rjson["email"];
+
+        // 1. Clear status text first
+        document.getElementById("statustext").innerText = "";
+
+        // 2. Set Email text
+        var anchorElement = document.getElementById("emailtext");
+        anchorElement.setAttribute(
+          "href",
+          "mailto:" + email + "?subject=Website Contact",
+        );
+        anchorElement.innerText = email;
+      } else {
+        throw new Error("Validation failed");
+      }
+    } catch (e) {
+      document.getElementById("statustext").innerText = "Verification Failed";
+      if (window.turnstile) window.turnstile.reset("#turnstile-widget");
     }
   };
 </script>
 
 <script>
+  declare const turnstile: any;
+
   function onEmailClick() {
-    grecaptcha.execute();
+    const statusText = document.getElementById("statustext");
+
+    // Clear any old email if they click again
+    document.getElementById("emailtext")!.innerText = "";
+
+    // Show verifying text immediately
+    if (statusText) statusText.innerText = "Verifying...";
+
+    if (typeof turnstile !== "undefined") {
+      turnstile.execute("#turnstile-widget");
+    }
   }
+
   const button = document.getElementById("emailBtn");
-  button!.addEventListener("click", onEmailClick);
+  if (button) button.addEventListener("click", onEmailClick);
 </script>
 
 <style>
@@ -115,22 +132,38 @@ const { linkedin, github, url, mysite } = Astro.props;
     opacity: 0.5;
   }
 
-  .emailtext {
-    text-decoration: underline;
-    margin: 0;
-    color: #141437;
-  }
-
-  .emailerror {
-    display: inline;
-    margin: 0;
-    color: #141437;
-  }
-
   @media only screen and (min-width: 768px) {
     :global(.icon) {
       width: 40px;
       height: 40px;
     }
+  }
+  .email-container {
+    /* Fixed height reserves space so layout doesn't jump */
+    height: 1.5rem;
+
+    /* Flexbox centers the content perfectly */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Ensure text is centered */
+    text-align: center;
+    width: 100%;
+    margin-top: 10px; /* Optional spacing from icons */
+  }
+
+  .emailtext {
+    text-decoration: underline;
+    color: #141437;
+    /* Ensure it doesn't break layout */
+    line-height: 1;
+  }
+
+  .statustext {
+    color: #141437;
+    font-size: 0.9em;
+    /* Ensure it doesn't break layout */
+    line-height: 1;
   }
 </style>

@@ -2,6 +2,7 @@
 interface Props {
   title: string;
 }
+
 const { title } = Astro.props;
 ---
 
@@ -15,6 +16,18 @@ const { title } = Astro.props;
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content={`
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com blob:; 
+        style-src 'self' 'unsafe-inline'; 
+        frame-src 'self' https://challenges.cloudflare.com; 
+        connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com ${import.meta.env.URL}; 
+        worker-src 'self' blob:; 
+        img-src 'self' data:;
+      `}
+    />
     <title>{title}</title>
   </head>
   <body>
@@ -22,16 +35,18 @@ const { title } = Astro.props;
   </body>
 </html>
 
-<script is:inline src="https://www.google.com/recaptcha/api.js" async defer
+<link rel="preconnect" href="https://challenges.cloudflare.com" />
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer
 ></script>
-
 <style is:global>
   :root {
     line-height: 1.5;
     font-weight: 400;
+
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
     background-color: #f1f5f9;
+
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;

@@ -18,10 +18,11 @@ import Particles from "../components/Particles.astro";
       mysite={import.meta.env.MYSITE}
     />
     <div
-      class="g-recaptcha"
+      class="cf-turnstile"
+      id="turnstile-widget"
       data-sitekey={import.meta.env.SITEKEY}
-      data-callback="onRecaptcha"
-      data-size="invisible"
+      data-callback="onTurnstileSuccess"
+      data-execution="execute"
     >
     </div>
   </main>
