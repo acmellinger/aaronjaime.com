@@ -15,7 +15,7 @@
     "@tsparticles/engine": "^3.9.1",
     "@tsparticles/slim": "^3.9.1",
     "@types/grecaptcha": "^3.0.9",
-    "astro": "5.16.4",
+    "astro": "5.16.5",
     "astro-icon": "^1.1.5",
     "typescript": "^5.9.3"
   },
