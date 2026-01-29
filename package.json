@@ -15,7 +15,7 @@
     "@tsparticles/engine": "^3.9.1",
     "@tsparticles/slim": "^3.9.1",
     "@types/grecaptcha": "^3.0.9",
-    "astro": "5.16.12",
+    "astro": "5.17.1",
     "astro-icon": "^1.1.5",
     "typescript": "^5.9.3"
   },
@@ -33,7 +33,7 @@
       "undici": ">=6.23.0",
       "diff": ">=8.0.3",
       "lodash": ">=4.17.23",
-      "tar": ">=7.5.4"
+      "tar": ">=7.5.7"
     }
   },
   "packageManager": "pnpm@10.28.0"
