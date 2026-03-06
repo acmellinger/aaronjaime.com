@@ -1,6 +1,6 @@
 # My Personal Landing Page
 
-A personal landing page with links to email (secured by recaptcha and a custom backend service), linkedin, github, etc.
+A personal landing page with links to email (secured by Cloudflare Turnstile and a custom backend service), LinkedIn, etc.
 
 ## 🧞 Commands
 
@@ -18,3 +18,19 @@ All commands are run from the root of the project, from a terminal:
 ## Deploying
 
 The code should auto deploy any changes to the `main` branch via Github Actions.
+
+## Turnstile Local Testing
+
+The email reveal flow needs `SITEKEY`, `URL`, and `MYSITE` from `.env`.
+
+For local UI testing without calling Turnstile or your backend, set:
+
+```env
+PUBLIC_TURNSTILE_LOCAL_BYPASS=true
+PUBLIC_TEST_EMAIL="you@example.com"
+```
+
+Notes:
+
+- `PUBLIC_TURNSTILE_LOCAL_BYPASS` is only honored in `astro dev`.
+- Production builds still require a valid Turnstile flow and backend validation.

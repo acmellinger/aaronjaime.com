@@ -7,33 +7,50 @@ interface Props {
 const { name, heading } = Astro.props;
 ---
 
-<div class="info">
+<header class="info">
   <h1>{name}</h1>
-  <h2>{heading}</h2>
-</div>
+  <p>{heading}</p>
+</header>
+
 <style>
-  h1 {
-    font-size: 50px;
-    display: block;
-    line-height: 1;
-    color: #141437;
-    margin: 0;
+  .info {
+    display: grid;
+    gap: 0.95rem;
+    margin-bottom: clamp(1.6rem, 4.5vw, 2.8rem);
+    padding-bottom: clamp(1.3rem, 3vw, 2.1rem);
+    border-bottom: 1px solid var(--line);
   }
 
-  h2 {
-    font-size: 20px;
-    display: block;
-    line-height: 1;
-    color: #141437;
-    margin-top: 10px;
+  h1 {
+    margin: 0;
+    font-family:
+      "Newsreader Variable", "Iowan Old Style", "Palatino Linotype",
+      "Book Antiqua", Palatino, Georgia, "Times New Roman", serif;
+    font-size: clamp(2.2rem, 7.4vw, 5.25rem);
+    font-weight: 600;
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-wrap: balance;
   }
-  @media only screen and (min-width: 768px) {
-    h1 {
-      margin-top: 0;
-      font-size: 76px;
-    }
-    h2 {
-      font-size: 34px;
+
+  p {
+    margin: 0;
+    max-width: min(720px, 100%);
+    font-family: "Montserrat", "Avenir Next", "Segoe UI", sans-serif;
+    font-size: clamp(0.94rem, 1.85vw, 1.22rem);
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 640px) {
+    .info {
+      gap: 0.7rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
     }
   }
 </style>
