@@ -5,165 +5,306 @@ interface Props {
   github: string;
   url: string;
   mysite: string;
+  sitekey: string;
 }
 
-const { linkedin, github, url, mysite } = Astro.props;
+const { linkedin, github, url, mysite, sitekey } = Astro.props;
+const localBypassEnabled =
+  import.meta.env.DEV &&
+  import.meta.env.PUBLIC_TURNSTILE_LOCAL_BYPASS === "true";
+const localTestEmail = import.meta.env.PUBLIC_TEST_EMAIL ?? "local@example.com";
 ---
 
-<div class="links">
-  <button title="My Email" aria-label="My Email" id="emailBtn">
-    <Icon name="mdi:email" class="icon" />
-  </button>
-  <a
-    title="My Linkedin"
-    aria-label="My LinkedIn"
-    target="_blank"
-    rel="noopener noreferrer"
-    href={linkedin}
-  >
-    <Icon name="mdi:linkedin" class="icon" />
-  </a>
+<div class="links-wrap">
+  <nav class="links" role="group" aria-label="Primary links">
+    <button
+      title="Reveal Email"
+      aria-label="Reveal Email"
+      id="emailBtn"
+      class="action"
+    >
+      <Icon name="mdi:email-fast-outline" class="icon" />
+      <span>Email</span>
+    </button>
+    <a
+      class="action"
+      title="LinkedIn"
+      aria-label="My LinkedIn"
+      target="_blank"
+      rel="noopener noreferrer"
+      href={linkedin}
+    >
+      <Icon name="mdi:linkedin" class="icon" />
+      <span>LinkedIn</span>
+    </a>
+  </nav>
+
+  <div id="email-container" class="email-container" aria-live="polite">
+    <a id="emailtext" class="emailtext"></a>
+    <span id="statustext" class="statustext"></span>
+  </div>
 </div>
 
-<div id="email-container" class="email-container">
-  <a id="emailtext" class="emailtext"></a>
-  <span id="statustext" class="statustext"></span>
+<div
+  class="cf-turnstile turnstile"
+  id="turnstile-widget"
+  data-sitekey={sitekey}
+  data-callback="onTurnstileSuccess"
+  data-error-callback="onTurnstileError"
+  data-expired-callback="onTurnstileExpired"
+  data-execution="execute"
+>
 </div>
 
-<script is:inline define:vars={{ url, mysite }}>
+<script
+  is:inline
+  define:vars={{ url, mysite, localBypassEnabled, localTestEmail }}
+>
+  function setStatus(message) {
+    const statusText = document.getElementById("statustext");
+    if (statusText) {
+      statusText.innerText = message;
+    }
+  }
+
+  function setEmail(email) {
+    const anchorElement = document.getElementById("emailtext");
+    if (anchorElement) {
+      anchorElement.setAttribute(
+        "href",
+        "mailto:" + email + "?subject=Website Contact",
+      );
+      anchorElement.innerText = email;
+    }
+  }
+
+  function setVerifyingState(loading) {
+    const button = document.getElementById("emailBtn");
+    if (button) {
+      button.toggleAttribute("disabled", loading);
+      button.setAttribute("aria-busy", loading ? "true" : "false");
+    }
+  }
+
+  window.onTurnstileError = function () {
+    setVerifyingState(false);
+    setStatus("Verification unavailable");
+  };
+
+  window.onTurnstileExpired = function () {
+    setVerifyingState(false);
+    setStatus("Verification expired");
+  };
+
   window.onTurnstileSuccess = async function (token) {
+    let timeout;
     try {
-      var response = await fetch(url, {
+      const controller = new AbortController();
+      timeout = window.setTimeout(() => controller.abort(), 10000);
+      const response = await fetch(url, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ Token: token, Site: mysite }),
+        signal: controller.signal,
       });
 
-      if (response.status === 200) {
-        const rjson = await response.json();
-        const email = rjson["email"];
-
-        // 1. Clear status text first
-        document.getElementById("statustext").innerText = "";
-
-        // 2. Set Email text
-        var anchorElement = document.getElementById("emailtext");
-        anchorElement.setAttribute(
-          "href",
-          "mailto:" + email + "?subject=Website Contact",
-        );
-        anchorElement.innerText = email;
-      } else {
+      if (response.status !== 200) {
         throw new Error("Validation failed");
       }
+
+      const rjson = await response.json();
+      const email = rjson["email"];
+      const isValidEmail =
+        typeof email === "string" &&
+        email.length > 3 &&
+        email.includes("@") &&
+        email.includes(".");
+
+      if (!isValidEmail) {
+        throw new Error("Invalid response");
+      }
+
+      setEmail(email);
+      setStatus("");
     } catch (e) {
-      document.getElementById("statustext").innerText = "Verification Failed";
-      if (window.turnstile) window.turnstile.reset("#turnstile-widget");
+      setStatus("Verification failed");
+      if (window.turnstile) {
+        window.turnstile.reset("#turnstile-widget");
+      }
+    } finally {
+      if (timeout) {
+        window.clearTimeout(timeout);
+      }
+      setVerifyingState(false);
     }
   };
 </script>
 
-<script>
-  declare const turnstile: any;
-
+<script
+  is:inline
+  define:vars={{ localBypassEnabled, localTestEmail, sitekey, url, mysite }}
+>
   function onEmailClick() {
+    const button = document.getElementById("emailBtn");
+    if (button?.getAttribute("aria-busy") === "true") {
+      return;
+    }
+
+    if (localBypassEnabled) {
+      const anchorElement = document.getElementById("emailtext");
+      if (anchorElement) {
+        anchorElement.setAttribute(
+          "href",
+          "mailto:" + localTestEmail + "?subject=Website Contact",
+        );
+        anchorElement.innerText = localTestEmail;
+      }
+      const statusText = document.getElementById("statustext");
+      if (statusText) {
+        statusText.innerText = "Local test mode";
+      }
+      return;
+    }
+
     const statusText = document.getElementById("statustext");
+    if (statusText) {
+      statusText.innerText = "Verifying";
+    }
 
-    // Clear any old email if they click again
-    document.getElementById("emailtext")!.innerText = "";
+    const emailElement = document.getElementById("emailtext");
+    if (emailElement) {
+      emailElement.innerText = "";
+      emailElement.removeAttribute("href");
+    }
 
-    // Show verifying text immediately
-    if (statusText) statusText.innerText = "Verifying...";
+    if (!sitekey || !url || !mysite) {
+      if (statusText) {
+        statusText.innerText = "Missing Turnstile configuration";
+      }
+      return;
+    }
 
-    if (typeof turnstile !== "undefined") {
-      turnstile.execute("#turnstile-widget");
+    if (button) {
+      button.setAttribute("aria-busy", "true");
+      button.toggleAttribute("disabled", true);
+    }
+
+    if (window.turnstile && window.turnstile.execute) {
+      window.turnstile.execute("#turnstile-widget");
+    } else if (statusText) {
+      if (button) {
+        button.setAttribute("aria-busy", "false");
+        button.removeAttribute("disabled");
+      }
+      statusText.innerText = "Verification unavailable";
     }
   }
 
   const button = document.getElementById("emailBtn");
-  if (button) button.addEventListener("click", onEmailClick);
+  if (button) {
+    button.addEventListener("click", onEmailClick);
+  }
 </script>
 
 <style>
-  button {
-    background-color: Transparent;
-    background-repeat: no-repeat;
-    border: none;
-    cursor: pointer;
-    overflow: hidden;
-    outline: none;
-    padding: 0;
-    text-align: center;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  .links-wrap {
+    display: grid;
+    gap: 0.9rem;
   }
 
   .links {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    gap: 0;
+    flex-wrap: wrap;
+    gap: 0.7rem;
   }
 
-  .links > * {
+  .action {
+    appearance: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.45rem;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--text);
+    padding: 0.66rem 1.02rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-family: "Montserrat", "Avenir Next", "Segoe UI", sans-serif;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .action:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .action:hover,
+  .action:focus-visible {
+    background: #f4f1eb;
+    border-color: #b9ad99;
+    color: var(--text);
+    outline: none;
   }
 
   :global(.icon) {
-    display: block;
-    text-align: center;
-    color: #141437;
-    width: 30px;
-    height: 30px;
-    padding: 10px;
-    margin: 5px;
-    transition: all 0.5s;
+    color: currentColor;
+    width: 0.95rem;
+    height: 0.95rem;
   }
 
-  :global(.icon:hover) {
-    opacity: 0.5;
-  }
-
-  :global(.icon:active) {
-    opacity: 0.5;
-  }
-
-  @media only screen and (min-width: 768px) {
-    :global(.icon) {
-      width: 40px;
-      height: 40px;
-    }
-  }
   .email-container {
-    /* Fixed height reserves space so layout doesn't jump */
-    height: 1.5rem;
-
-    /* Flexbox centers the content perfectly */
+    min-height: 1.6rem;
     display: flex;
-    justify-content: center;
     align-items: center;
-
-    /* Ensure text is centered */
-    text-align: center;
-    width: 100%;
-    margin-top: 10px; /* Optional spacing from icons */
+    flex-wrap: wrap;
+    gap: 0.45rem;
   }
 
   .emailtext {
-    text-decoration: underline;
-    color: #141437;
-    /* Ensure it doesn't break layout */
-    line-height: 1;
+    color: var(--text);
+    font-family: "Montserrat", "Avenir Next", "Segoe UI", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-underline-offset: 0.14em;
+    overflow-wrap: anywhere;
   }
 
   .statustext {
-    color: #141437;
-    font-size: 0.9em;
-    /* Ensure it doesn't break layout */
-    line-height: 1;
+    color: var(--muted);
+    font-family: "Montserrat", "Avenir Next", "Segoe UI", sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .statustext:empty {
+    display: none;
+  }
+
+  .turnstile {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    .action {
+      width: 100%;
+      justify-content: center;
+    }
   }
 </style>
