@@ -4,13 +4,15 @@ import Info from "../components/Info.astro";
 import Links from "../components/Links.astro";
 ---
 
-<Layout title={import.meta.env.NAME}>
+<Layout
+  title={import.meta.env.NAME}
+  description={`${import.meta.env.NAME} — ${import.meta.env.HEADING}`}
+>
   <main class="page">
     <section class="panel" aria-label="Profile">
       <Info name={import.meta.env.NAME} heading={import.meta.env.HEADING} />
       <Links
         linkedin={import.meta.env.LINKEDIN}
-        github={import.meta.env.GITHUB}
         url={import.meta.env.URL}
         mysite={import.meta.env.MYSITE}
         sitekey={import.meta.env.SITEKEY}
@@ -47,6 +49,12 @@ import Links from "../components/Links.astro";
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      animation: none;
     }
   }
 
