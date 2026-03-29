@@ -2,13 +2,12 @@
 import { Icon } from "astro-icon/components";
 interface Props {
   linkedin: string;
-  github: string;
   url: string;
   mysite: string;
   sitekey: string;
 }
 
-const { linkedin, github, url, mysite, sitekey } = Astro.props;
+const { linkedin, url, mysite, sitekey } = Astro.props;
 const localBypassEnabled =
   import.meta.env.DEV &&
   import.meta.env.PUBLIC_TURNSTILE_LOCAL_BYPASS === "true";
@@ -18,7 +17,6 @@ const localTestEmail = import.meta.env.PUBLIC_TEST_EMAIL ?? "local@example.com";
 <div class="links-wrap">
   <nav class="links" role="group" aria-label="Primary links">
     <button
-      title="Reveal Email"
       aria-label="Reveal Email"
       id="emailBtn"
       class="action"
@@ -40,7 +38,7 @@ const localTestEmail = import.meta.env.PUBLIC_TEST_EMAIL ?? "local@example.com";
   </nav>
 
   <div id="email-container" class="email-container" aria-live="polite">
-    <a id="emailtext" class="emailtext"></a>
+    <a id="emailtext" class="emailtext" tabindex="-1"></a>
     <span id="statustext" class="statustext"></span>
   </div>
 </div>
@@ -75,6 +73,7 @@ const localTestEmail = import.meta.env.PUBLIC_TEST_EMAIL ?? "local@example.com";
         "mailto:" + email + "?subject=Website Contact",
       );
       anchorElement.innerText = email;
+      anchorElement.removeAttribute("tabindex");
     }
   }
 
@@ -247,12 +246,19 @@ const localTestEmail = import.meta.env.PUBLIC_TEST_EMAIL ?? "local@example.com";
     cursor: progress;
   }
 
-  .action:hover,
-  .action:focus-visible {
+  .action:hover {
     background: #f4f1eb;
     border-color: #b9ad99;
     color: var(--text);
     outline: none;
+  }
+
+  .action:focus-visible {
+    background: #f4f1eb;
+    border-color: #b9ad99;
+    color: var(--text);
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
   }
 
   :global(.icon) {
