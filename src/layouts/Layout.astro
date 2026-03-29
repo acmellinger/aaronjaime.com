@@ -23,7 +23,9 @@ const { title, description } = Astro.props;
     <meta name="theme-color" content="#f6f4ef" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={Astro.site?.href} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.site?.href} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta
