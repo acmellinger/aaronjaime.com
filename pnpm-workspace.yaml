@@ -1,4 +1,10 @@
+allowBuilds:
+  esbuild: true
+  sharp: true
 onlyBuiltDependencies:
-  - '@tsparticles/engine'
+  - "@tsparticles/engine"
   - esbuild
   - sharp
+
+overrides:
+  "yaml": "^2.8.3"
