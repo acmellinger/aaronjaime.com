@@ -5,6 +5,3 @@ onlyBuiltDependencies:
   - "@tsparticles/engine"
   - esbuild
   - sharp
-
-overrides:
-  "yaml": "^2.8.3"
