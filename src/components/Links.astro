@@ -148,6 +148,32 @@ const localTestEmail = import.meta.env.PUBLIC_TEST_EMAIL ?? "local@example.com";
   is:inline
   define:vars={{ localBypassEnabled, localTestEmail, sitekey, url, mysite }}
 >
+  let turnstileWidgetId = null;
+
+  function loadTurnstile() {
+    return new Promise((resolve, reject) => {
+      if (window.turnstile) {
+        resolve(window.turnstile);
+        return;
+      }
+      let script = document.getElementById("turnstile-script");
+      if (!script) {
+        script = document.createElement("script");
+        script.id = "turnstile-script";
+        script.src =
+          "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+      script.addEventListener("load", () => resolve(window.turnstile));
+      script.addEventListener("error", () =>
+        reject(new Error("Failed to load Turnstile")),
+      );
+    });
+  }
+
   function onEmailClick() {
     const button = document.getElementById("emailBtn");
     if (button?.getAttribute("aria-busy") === "true") {
@@ -192,16 +218,25 @@ const localTestEmail = import.meta.env.PUBLIC_TEST_EMAIL ?? "local@example.com";
       button.setAttribute("aria-busy", "true");
       button.toggleAttribute("disabled", true);
     }
-
-    if (window.turnstile && window.turnstile.execute) {
-      window.turnstile.execute("#turnstile-widget");
-    } else if (statusText) {
-      if (button) {
-        button.setAttribute("aria-busy", "false");
-        button.removeAttribute("disabled");
-      }
-      statusText.innerText = "Verification unavailable";
-    }
+    loadTurnstile()
+      .then((turnstile) => {
+        if (!turnstile || !turnstile.render || !turnstile.execute) {
+          throw new Error("Turnstile unavailable");
+        }
+        if (turnstileWidgetId === null) {
+          turnstileWidgetId = turnstile.render("#turnstile-widget");
+        }
+        turnstile.execute("#turnstile-widget");
+      })
+      .catch(() => {
+        if (button) {
+          button.setAttribute("aria-busy", "false");
+          button.removeAttribute("disabled");
+        }
+        if (statusText) {
+          statusText.innerText = "Verification unavailable";
+        }
+      });
   }
 
   const button = document.getElementById("emailBtn");

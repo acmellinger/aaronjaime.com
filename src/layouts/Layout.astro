@@ -40,7 +40,6 @@ const { title, description } = Astro.props;
         img-src 'self' data:;
       `}
     />
-    <link rel="preconnect" href="https://challenges.cloudflare.com" />
     <title>{title}</title>
     <script
       is:inline
@@ -50,11 +49,6 @@ const { title, description } = Astro.props;
   </head>
   <body>
     <slot />
-    <script
-      is:inline
-      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-      async
-      defer></script>
   </body>
 </html>
 
