@@ -3,7 +3,6 @@ allowBuilds:
   sharp: true
   workerd: true
 onlyBuiltDependencies:
-  - "@tsparticles/engine"
   - esbuild
   - sharp
   - workerd
